@@ -1,6 +1,6 @@
 package com.example.casadooleobackend.controller;
 
-import com.example.casadooleobackend.dao.VeiculosDao;
+import com.example.casadooleobackend.dao.VeiculoDao;
 import com.example.casadooleobackend.model.Veiculo;
 import com.google.gson.Gson;
 
@@ -13,8 +13,8 @@ public class VeiculosController {
     @GET
     @Produces("application/json")
     public Response listaVeiculos () {
-        VeiculosDao veiculosDao = new VeiculosDao();
-        List<Veiculo> veiculos = veiculosDao.listaDeVeiculos();
+        VeiculoDao veiculoDao = new VeiculoDao();
+        List<Veiculo> veiculos = veiculoDao.listaDeVeiculos();
         return Response.ok(new Gson().toJson(veiculos)).build();
     }
 
@@ -22,8 +22,8 @@ public class VeiculosController {
     @Path("{idVeiculo}")
     @Produces("application/json")
     public Response getIdVeiculos (@PathParam("idVeiculo") int id) {
-        VeiculosDao veiculosDao = new VeiculosDao();
-        Veiculo veiculo = veiculosDao.consultaVeiculoPorId(id);
+        VeiculoDao veiculoDao = new VeiculoDao();
+        Veiculo veiculo = veiculoDao.consultaVeiculoPorId(id);
         return Response.ok(new Gson().toJson(veiculo)).build();
     }
 
@@ -31,9 +31,9 @@ public class VeiculosController {
     @Consumes("application/json")
     @Produces("application/json")
     public Response criarVeiculo (Veiculo veiculo) {
-        VeiculosDao veiculosDao = new VeiculosDao();
-        veiculosDao.cadastraVeiculo(veiculo);
-        return Response.ok(new Gson().toJson("Cadastrado!!!"+veiculo)).build();
+        VeiculoDao veiculoDao = new VeiculoDao();
+        veiculoDao.cadastraVeiculo(veiculo);
+        return Response.ok(new Gson().toJson("Cadastrado!!!"  +veiculo)).build();
     }
 
     @PUT
@@ -41,9 +41,9 @@ public class VeiculosController {
     @Consumes("application/json")
     @Produces("application/json")
     public Response modificaVeiculo (Veiculo veiculo, @PathParam("idVeiculo") int id) {
-        VeiculosDao veiculosDao = new VeiculosDao();
-        if (veiculosDao.consultaVeiculoPorId(id) != null) {
-            Veiculo result = veiculosDao.alteraVeiculo(veiculo, id);
+        VeiculoDao veiculoDao = new VeiculoDao();
+        if (veiculoDao.consultaVeiculoPorId(id) != null) {
+            Veiculo result = veiculoDao.alteraVeiculo(veiculo, id);
             return Response.ok(new Gson().toJson(result)).build();
         } else {
             return null;
@@ -54,8 +54,8 @@ public class VeiculosController {
     @Path("{idVeiculo}")
     @Produces("application/json")
     public Response deletarVeiculo (Veiculo veiculo, @PathParam("idVeiculo") int id) {
-        VeiculosDao veiculosDao = new VeiculosDao();
-        veiculosDao.removeVeiculo(id);
-        return Response.ok("removido com sucesso!!!").build();
+        VeiculoDao veiculoDao = new VeiculoDao();
+        veiculoDao.removeVeiculo(id);
+        return Response.ok("Removido com sucesso!!!").build();
     }
 }
