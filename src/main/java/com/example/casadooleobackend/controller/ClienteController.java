@@ -11,13 +11,13 @@ import java.util.List;
 @Path("cliente")
 public class ClienteController {
 
-    @GET
-    @Path("criartabela")
-    @Produces("application/json")
+    @POST
+    @Path("criartabela/cliente")
+    //@Produces("application/json")
     public Response criaTabelaFilme () {
         ClienteDao clienteDao = new ClienteDao();
         clienteDao.criaTabelaCliente();
-        return Response.ok(new Gson().toJson("Tabela criada com sucesso!")).build();
+        return Response.ok("Tabela criada com sucesso!").build();
     }
 
     @GET
@@ -62,7 +62,7 @@ public class ClienteController {
 
     @DELETE
     @Path("{idCliente}")
-    @Produces("application/json")
+    //@Produces("application/json")
     public Response deletarCliente (Cliente cliente, @PathParam("idCliente") int id) {
         ClienteDao clienteDao = new ClienteDao();
         clienteDao.removeCliente(id);
