@@ -14,6 +14,27 @@ public class ClienteDao {
         this.connection = new ConnectionFactory().getConnection();
     }
 
+
+    public void criaTabelaCliente () {
+        String sql = "create table if not exists cliente (" +
+                "idCliente int PRIMARY KEY AUTO_INCREMENT," +
+                "nome varchar(30) NOT NULL," +
+                "endereco varchar(40)," +
+                "email varchar(40) UNIQUE," +
+                "telefone int" +
+                "constraint fk_idUsuario FOREIGN kEY (idUsuario)," +
+                "REFERENCES cliente(idUsuario)" +
+                ");";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.execute();
+            stmt.close();
+            System.out.println("Tabela Criada!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void cadastraCliente (Cliente c) {
         String sql = "INSERT INTO cliente" +
                 "(nome, endereco, email, telefone)" +

@@ -1,5 +1,6 @@
 package com.example.casadooleobackend.controller;
 
+import com.example.casadooleobackend.dao.ClienteDao;
 import com.example.casadooleobackend.dao.VeiculoDao;
 import com.example.casadooleobackend.model.Veiculo;
 import com.google.gson.Gson;
@@ -10,6 +11,16 @@ import java.util.List;
 
 @Path("veiculo")
 public class VeiculosController {
+
+    @GET
+    @Path("criartabela")
+    @Produces("application/json")
+    public Response criaTabelaVeiculo () {
+        VeiculoDao veiculoDao = new VeiculoDao();
+        veiculoDao.criaTabelaVeiculo();
+        return Response.ok(new Gson().toJson("Tabela criada com sucesso!")).build();
+    }
+
     @GET
     @Produces("application/json")
     public Response listaVeiculos () {
@@ -33,7 +44,7 @@ public class VeiculosController {
     public Response criarVeiculo (Veiculo veiculo) {
         VeiculoDao veiculoDao = new VeiculoDao();
         veiculoDao.cadastraVeiculo(veiculo);
-        return Response.ok(new Gson().toJson("Cadastrado!!!"  +veiculo)).build();
+        return Response.ok(new Gson().toJson("Cadastrado!!!" + veiculo)).build();
     }
 
     @PUT

@@ -19,6 +19,32 @@ public class VeiculoDao {
 
         this.connection = new ConnectionFactory().getConnection();
     }
+    public void criaTabelaVeiculo () {
+        String sql = "create table if not exists veiculos  (" +
+                "idVeiculos int PRIMARY KEY UNIQUE AUTO_INCREMENT," +
+                "marca varchar(20)," +
+                "modelo varchar(20)," +
+                "placaDoVeiculo varchar(10) NOT NULL," +
+                "ano year" +
+                "constraint fk_idCliente FOREIGN kEY (idCliente)," +
+                "REFERENCES cliente(idCliente)" +
+                ");";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.execute();
+            stmt.close();
+            System.out.println("Tabela Criada!");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+
+
+
+
 
     public void cadastraVeiculo (Veiculo v) {
         String sql = "INSERT INTO veiculos" +

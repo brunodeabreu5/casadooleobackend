@@ -1,5 +1,6 @@
 package com.example.casadooleobackend.model;
 
+
 public class Cliente {
 
     private int idCliente;
@@ -7,16 +8,18 @@ public class Cliente {
     private String endereco;
     private String email;
     private String telefone;
+    private Veiculo veiculo;
 
-    public Cliente (){
+    public Cliente () {
     }
 
-    public Cliente (int idCliente, String nome, String endereco, String email, String telefone) {
+    public Cliente (int idCliente, String nome, String endereco, String email, String telefone, Veiculo veiculo) {
         this.idCliente = idCliente;
         this.nome = nome;
         this.endereco = endereco;
         this.email = email;
         this.telefone = telefone;
+        this.veiculo = veiculo;
     }
 
     public int getIdCliente () {
@@ -59,6 +62,14 @@ public class Cliente {
         this.telefone = telefone;
     }
 
+    public Veiculo getVeiculo () {
+        return veiculo;
+    }
+
+    public void setVeiculo (Veiculo veiculo) {
+        this.veiculo = veiculo;
+    }
+
     @Override
     public String toString () {
         return "Cliente{" +
@@ -67,6 +78,7 @@ public class Cliente {
                 ", endereco='" + endereco + '\'' +
                 ", email='" + email + '\'' +
                 ", telefone='" + telefone + '\'' +
+                ", veiculo=" + veiculo +
                 '}';
     }
 }
