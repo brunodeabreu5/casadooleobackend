@@ -1,0 +1,403 @@
+Index: src/main/java/com/backend/casadooleo/CasadooleoApplication.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo;\r\n\r\nimport org.springframework.boot.SpringApplication;\r\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\r\n\r\n@SpringBootApplication\r\npublic class CasadooleoApplication {\r\n\r\n    public static void main (String[] args) {\r\n        SpringApplication.run(CasadooleoApplication.class, args);\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/CasadooleoApplication.java b/src/main/java/com/backend/casadooleo/CasadooleoApplication.java
+--- a/src/main/java/com/backend/casadooleo/CasadooleoApplication.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/CasadooleoApplication.java	(date 1622589815729)
+@@ -5,9 +5,7 @@
+ 
+ @SpringBootApplication
+ public class CasadooleoApplication {
+-
+     public static void main (String[] args) {
+         SpringApplication.run(CasadooleoApplication.class, args);
+     }
+-
+ }
+Index: src/main/java/com/backend/casadooleo/service/ClienteService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo.service;\r\n\r\nimport com.backend.casadooleo.dto.ClienteDTO;\r\nimport com.backend.casadooleo.model.Cliente;\r\nimport com.backend.casadooleo.repositories.ClienteRepositories;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\npublic class ClienteService {\r\n    @Autowired\r\n    private ClienteRepositories repo;\r\n\r\n    public List<ClienteDTO> findAll () {\r\n        List<Cliente> result = repo.findAll();\r\n        return result.stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/service/ClienteService.java b/src/main/java/com/backend/casadooleo/service/ClienteService.java
+--- a/src/main/java/com/backend/casadooleo/service/ClienteService.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/service/ClienteService.java	(date 1623077848265)
+@@ -3,19 +3,68 @@
+ import com.backend.casadooleo.dto.ClienteDTO;
+ import com.backend.casadooleo.model.Cliente;
+ import com.backend.casadooleo.repositories.ClienteRepositories;
++import com.backend.casadooleo.service.exceptions.DataIntegrityViolationException;
++import com.backend.casadooleo.service.exceptions.ObjectionNotFountException;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Service;
+ 
++import java.io.Serializable;
+ import java.util.List;
++import java.util.Optional;
+ import java.util.stream.Collectors;
+ 
+ @Service
+-public class ClienteService {
++public class ClienteService implements Serializable {
++
++    private static final long serialVersionUID = 1L;
+     @Autowired
+-    private ClienteRepositories repo;
++    private ClienteRepositories clienteRepositories;
+ 
+     public List<ClienteDTO> findAll () {
+-        List<Cliente> result = repo.findAll();
++        List<Cliente> result = clienteRepositories.findAll();
+         return result.stream().map(x -> new ClienteDTO(x)).collect(Collectors.toList());
+     }
++
++    public Cliente findById (int id) {
++        //optional tem a função de escolha se vai ter o id ou não
++        Optional<Cliente> obj = clienteRepositories.findById(id);
++        //se retorna sem id a orElseThorow "ou Então jogue"
++        //tem a função
++        return obj.orElseThrow(() -> new ObjectionNotFountException("Cliente não encontrado " + id));
++    }
++
++    //sava um novo objeto eu passo no paramento (Objeto <obj>)
++    public Cliente create (Cliente obj) {
++        //o metodo getIdCliente recebe o valor null e a função save criar um novo objeto
++        obj.getIdCliente();
++        return clienteRepositories.save(obj);
++    }
++
++    //Objeto cliente eu chamo da model e para fazer as comparação se existe eu passo como parametro
++    //e chamo o id "int com nome parametro id, e chamando o dto clienteDTO"
++    public Cliente update (int id, ClienteDTO objDto) {
++        //chamo o objeto cliente para fazer a comparação se existem que chamo no metodo findById (<objeto id>)
++        Cliente obj = findById(id);
++        //criado a variavel obj o set pega o valor do objeto e o get atualizar o objeto
++        obj.setNome(objDto.getNome());
++        obj.setEmail(objDto.getEmail());
++        obj.setEndereco(objDto.getEndereco());
++        obj.setTelefone(objDto.getTelefone());
++        //retorna os novos valores do objeto <obj>
++        return clienteRepositories.save(obj);
++    }
++
++    public void delete (int idCliente) {
++        //vai fazer a verificação se existem o objeto
++        findById(idCliente);
++            //tentar
++        try{
++            clienteRepositories.deleteById(idCliente);
++            //pega
++        }catch (DataIntegrityViolationException e){
++            //lança novo
++            throw new com.backend.casadooleo.service.exceptions.DataIntegrityViolationException("Objeto não pode ser deletado!!!");
++        }
++
++    }
+ }
+Index: src/main/java/com/backend/casadooleo/repositories/ClienteRepositories.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo.repositories;\r\n\r\nimport com.backend.casadooleo.model.Cliente;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\n\r\npublic interface ClienteRepositories extends JpaRepository<Cliente, Integer> {\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/repositories/ClienteRepositories.java b/src/main/java/com/backend/casadooleo/repositories/ClienteRepositories.java
+--- a/src/main/java/com/backend/casadooleo/repositories/ClienteRepositories.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/repositories/ClienteRepositories.java	(date 1622842896941)
+@@ -2,7 +2,8 @@
+ 
+ import com.backend.casadooleo.model.Cliente;
+ import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
+ 
++@Repository
+ public interface ClienteRepositories extends JpaRepository<Cliente, Integer> {
+-
+ }
+Index: src/main/java/com/backend/casadooleo/controller/ClienteController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo.controller;\r\n\r\npublic class ClienteController {\r\n\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/controller/ClienteController.java b/src/main/java/com/backend/casadooleo/controller/ClienteController.java
+--- a/src/main/java/com/backend/casadooleo/controller/ClienteController.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/controller/ClienteController.java	(date 1623190957324)
+@@ -1,7 +1,51 @@
+ package com.backend.casadooleo.controller;
+ 
++import com.backend.casadooleo.dto.ClienteDTO;
++import com.backend.casadooleo.model.Cliente;
++import com.backend.casadooleo.service.ClienteService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
++
++import java.net.URI;
++import java.util.List;
++
++@RestController
++@RequestMapping("/cliente")
+ public class ClienteController {
++    @Autowired
++    private ClienteService service;
++
++    @GetMapping(value = "/{idCliente}")
++    public ResponseEntity<Cliente> findById (@PathVariable int idCliente) {
++        Cliente obj = service.findById(idCliente);
++        return ResponseEntity.ok().body(obj);
++    }
+ 
++    @GetMapping
++    public ResponseEntity<List<ClienteDTO>> findAll () {
++        List<ClienteDTO> list = service.findAll();
++        return ResponseEntity.ok(list);
++    }
+ 
++    @PostMapping
++    public ResponseEntity<Cliente> create (@RequestBody Cliente obj) {
++        obj = service.create(obj);
++        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{idCliente}").
++             buildAndExpand(obj.getIdCliente()).toUri();
++        return ResponseEntity.created(uri).body(obj);
++    }
+ 
++    @PutMapping(value = "/{idCliente}")// int para fazer a comparação se existe @requestBody e a requisição do corpo
++    public ResponseEntity<ClienteDTO> update (@PathVariable int idCliente, @RequestBody ClienteDTO objDto) {
++        Cliente newObj = service.update(idCliente, objDto);
++        return ResponseEntity.ok().body(new ClienteDTO(newObj));
++    }
++
++    @DeleteMapping(value = "/{idCliente}")
++    public ResponseEntity<Void> delete (@PathVariable int idCliente) {
++        service.delete(idCliente);
++        return ResponseEntity.noContent().build();
++    }
+ }
+Index: src/main/java/com/backend/casadooleo/SecurityConfig.java
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/SecurityConfig.java b/src/main/java/com/backend/casadooleo/SecurityConfig.java
+deleted file mode 100644
+--- a/src/main/java/com/backend/casadooleo/SecurityConfig.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ /dev/null	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
+@@ -1,43 +0,0 @@
+-package com.backend.casadooleo;
+-
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.context.annotation.Bean;
+-import org.springframework.context.annotation.Configuration;
+-import org.springframework.core.env.Environment;
+-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+-import org.springframework.security.config.http.SessionCreationPolicy;
+-import org.springframework.web.cors.CorsConfiguration;
+-import org.springframework.web.cors.CorsConfigurationSource;
+-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+-
+-import java.util.Arrays;
+-
+-@Configuration
+-@EnableWebSecurity
+-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+-
+-    @Autowired
+-    private Environment env;
+-
+-    @Override
+-    protected void configure (HttpSecurity http) throws Exception {
+-        if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+-            http.headers().frameOptions().disable();
+-        }
+-
+-        http.cors().and().csrf().disable();
+-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+-        http.authorizeRequests().anyRequest().permitAll();
+-    }
+-
+-    @Bean
+-    CorsConfigurationSource corsConfigurationSource () {
+-        CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+-        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+-        source.registerCorsConfiguration("/**", configuration);
+-        return source;
+-    }
+-}
+Index: casaDoOleo.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule=\"true\" type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"FacetManager\">\r\n    <facet type=\"web\" name=\"Web\">\r\n      <configuration>\r\n        <webroots />\r\n        <sourceRoots>\r\n          <root url=\"file://$MODULE_DIR$/src/main/java\" />\r\n          <root url=\"file://$MODULE_DIR$/src/main/resources\" />\r\n        </sourceRoots>\r\n      </configuration>\r\n    </facet>\r\n    <facet type=\"jpa\" name=\"JPA\">\r\n      <configuration>\r\n        <setting name=\"validation-enabled\" value=\"true\" />\r\n        <setting name=\"provider-name\" value=\"Hibernate\" />\r\n        <datasource-mapping>\r\n          <factory-entry name=\"entityManagerFactory\" />\r\n        </datasource-mapping>\r\n        <naming-strategy-map />\r\n      </configuration>\r\n    </facet>\r\n    <facet type=\"Spring\" name=\"Spring\">\r\n      <configuration />\r\n    </facet>\r\n  </component>\r\n  <component name=\"NewModuleRootManager\" LANGUAGE_LEVEL=\"JDK_11\">\r\n    <output url=\"file://$MODULE_DIR$/target/classes\" />\r\n    <output-test url=\"file://$MODULE_DIR$/target/test-classes\" />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/main/java\" isTestSource=\"false\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/main/resources\" type=\"java-resource\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/test/java\" isTestSource=\"true\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/target\" />\r\n    </content>\r\n    <orderEntry type=\"jdk\" jdkName=\"11\" jdkType=\"JavaSDK\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-data-jpa:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-aop:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.aspectj:aspectjweaver:1.9.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-jdbc:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.zaxxer:HikariCP:3.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-jdbc:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: jakarta.transaction:jakarta.transaction-api:1.3.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: jakarta.persistence:jakarta.persistence-api:2.2.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.hibernate:hibernate-core:5.4.30.Final\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.jboss.logging:jboss-logging:3.4.1.Final\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.javassist:javassist:3.27.0-GA\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: net.bytebuddy:byte-buddy:1.10.22\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: antlr:antlr:2.7.7\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.jboss:jandex:2.2.3.Final\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml:classmate:1.5.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.dom4j:dom4j:2.1.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.hibernate.common:hibernate-commons-annotations:5.1.2.Final\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.glassfish.jaxb:jaxb-runtime:2.3.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.glassfish.jaxb:txw2:2.3.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.sun.istack:istack-commons-runtime:3.0.12\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: com.sun.activation:jakarta.activation:1.2.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.data:spring-data-jpa:2.4.8\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.data:spring-data-commons:2.4.8\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-orm:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-context:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-tx:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-beans:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.slf4j:slf4j-api:1.7.30\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-aspects:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-security:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-autoconfigure:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-logging:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: ch.qos.logback:logback-classic:1.2.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: ch.qos.logback:logback-core:1.2.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.apache.logging.log4j:log4j-to-slf4j:2.13.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.apache.logging.log4j:log4j-api:2.13.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.slf4j:jul-to-slf4j:1.7.30\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: jakarta.annotation:jakarta.annotation-api:1.3.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.yaml:snakeyaml:1.27\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-aop:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.security:spring-security-config:5.4.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.security:spring-security-web:5.4.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-expression:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-web:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-json:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.core:jackson-databind:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.core:jackson-annotations:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.core:jackson-core:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot-starter-tomcat:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.apache.tomcat.embed:tomcat-embed-core:9.0.45\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.glassfish:jakarta.el:3.0.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.apache.tomcat.embed:tomcat-embed-websocket:9.0.45\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-web:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-webmvc:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: com.h2database:h2:1.4.200\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: org.postgresql:postgresql:42.2.19\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: org.checkerframework:checker-qual:3.5.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.springframework.boot:spring-boot-starter-test:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.springframework.boot:spring-boot-test:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.springframework.boot:spring-boot-test-autoconfigure:2.4.5\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: com.jayway.jsonpath:json-path:2.4.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: net.minidev:json-smart:2.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: net.minidev:accessors-smart:1.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.ow2.asm:asm:5.0.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: jakarta.activation:jakarta.activation-api:1.2.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.assertj:assertj-core:3.18.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.hamcrest:hamcrest:2.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter:5.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-api:5.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.apiguardian:apiguardian-api:1.1.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.opentest4j:opentest4j:1.2.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.platform:junit-platform-commons:1.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-params:5.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.jupiter:junit-jupiter-engine:5.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.junit.platform:junit-platform-engine:1.7.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.mockito:mockito-core:3.6.28\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: net.bytebuddy:byte-buddy-agent:1.10.22\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.objenesis:objenesis:3.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.mockito:mockito-junit-jupiter:3.6.28\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.skyscreamer:jsonassert:1.5.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: com.vaadin.external.google:android-json:0.0.20131108.vaadin1\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-core:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework:spring-jcl:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.springframework:spring-test:5.3.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.xmlunit:xmlunit-core:2.7.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"TEST\" name=\"Maven: org.springframework.security:spring-security-test:5.4.6\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.security:spring-security-core:5.4.6\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/casaDoOleo.iml b/casaDoOleo.iml
+--- a/casaDoOleo.iml	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/casaDoOleo.iml	(date 1622120039301)
+@@ -66,8 +66,6 @@
+     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:5.3.6" level="project" />
+     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-security:2.4.5" level="project" />
+     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.4.5" level="project" />
+-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.4.5" level="project" />
+-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.4.5" level="project" />
+     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-logging:2.4.5" level="project" />
+     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
+     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
+@@ -97,6 +95,7 @@
+     <orderEntry type="library" scope="RUNTIME" name="Maven: com.h2database:h2:1.4.200" level="project" />
+     <orderEntry type="library" scope="RUNTIME" name="Maven: org.postgresql:postgresql:42.2.19" level="project" />
+     <orderEntry type="library" scope="RUNTIME" name="Maven: org.checkerframework:checker-qual:3.5.0" level="project" />
++    <orderEntry type="library" scope="RUNTIME" name="Maven: mysql:mysql-connector-java:8.0.23" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-starter-test:2.4.5" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test:2.4.5" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test-autoconfigure:2.4.5" level="project" />
+@@ -126,6 +125,9 @@
+     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.3.6" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:5.3.6" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.xmlunit:xmlunit-core:2.7.0" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-devtools:2.4.5" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.4.5" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.4.5" level="project" />
+     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.security:spring-security-test:5.4.6" level="project" />
+     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.4.6" level="project" />
+   </component>
+Index: src/main/java/com/backend/casadooleo/dto/ClienteDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo.dto;\r\n\r\nimport com.backend.casadooleo.model.Cliente;\r\n\r\nimport java.io.Serializable;\r\n\r\npublic class ClienteDTO implements Serializable {\r\n\r\n    private static final int serialVersionUID = 1;\r\n\r\n    private int idCliente;\r\n    private String nome;\r\n    private String endereco;\r\n    private String email;\r\n    private String telefone;\r\n\r\n    public ClienteDTO(){}\r\n\r\n    public ClienteDTO (int idCliente, String nome, String endereco, String email, String telefone) {\r\n        this.idCliente = idCliente;\r\n        this.nome = nome;\r\n        this.endereco = endereco;\r\n        this.email = email;\r\n        this.telefone = telefone;\r\n    }\r\n\r\n    public ClienteDTO (Cliente model) {\r\n        idCliente = model.getIdCliente();\r\n        nome = model.getNome();\r\n        endereco = model.getEndereco();\r\n        email = model.getEmail();\r\n        telefone = model.getTelefone();\r\n    }\r\n\r\n    public int getIdCliente () {\r\n        return idCliente;\r\n    }\r\n\r\n    public void setIdCliente (int idCliente) {\r\n        this.idCliente = idCliente;\r\n    }\r\n\r\n    public String getNome () {\r\n        return nome;\r\n    }\r\n\r\n    public void setNome (String nome) {\r\n        this.nome = nome;\r\n    }\r\n\r\n    public String getEndereco () {\r\n        return endereco;\r\n    }\r\n\r\n    public void setEndereco (String endereco) {\r\n        this.endereco = endereco;\r\n    }\r\n\r\n    public String getEmail () {\r\n        return email;\r\n    }\r\n\r\n    public void setEmail (String email) {\r\n        this.email = email;\r\n    }\r\n\r\n    public String getTelefone () {\r\n        return telefone;\r\n    }\r\n\r\n    public void setTelefone (String telefone) {\r\n        this.telefone = telefone;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/dto/ClienteDTO.java b/src/main/java/com/backend/casadooleo/dto/ClienteDTO.java
+--- a/src/main/java/com/backend/casadooleo/dto/ClienteDTO.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/dto/ClienteDTO.java	(date 1622854728257)
+@@ -14,17 +14,12 @@
+     private String email;
+     private String telefone;
+ 
+-    public ClienteDTO(){}
+-
+-    public ClienteDTO (int idCliente, String nome, String endereco, String email, String telefone) {
+-        this.idCliente = idCliente;
+-        this.nome = nome;
+-        this.endereco = endereco;
+-        this.email = email;
+-        this.telefone = telefone;
++    public ClienteDTO () {
++        super();
+     }
+ 
+     public ClienteDTO (Cliente model) {
++        super();
+         idCliente = model.getIdCliente();
+         nome = model.getNome();
+         endereco = model.getEndereco();
+@@ -71,4 +66,5 @@
+     public void setTelefone (String telefone) {
+         this.telefone = telefone;
+     }
++
+ }
+Index: src/main/resources/application-test.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.jpa.open-in-view=false\r\nspring.datasource.url=jdbc:h2:mem:testdb\r\nspring.datasource.username=sa\r\nspring.datasource.password=\r\nspring.datasource.driver-class-name=org.h2.Driver\r\n# H2\r\nspring.h2.console.enabled=true\r\n#caminho para o banco\r\nspring.h2.console.path=/h2-banco\r\n# mostra os comandos\r\nspring.jpa.show-sql=true\r\nspring.jpa.properties.hibernate.format_sql=true\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/application-test.properties b/src/main/resources/application-test.properties
+--- a/src/main/resources/application-test.properties	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/resources/application-test.properties	(date 1621479754027)
+@@ -1,4 +1,4 @@
+-spring.jpa.open-in-view=false
++#Acesso ao Banco
+ spring.datasource.url=jdbc:h2:mem:testdb
+ spring.datasource.username=sa
+ spring.datasource.password=
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n    <modelVersion>4.0.0</modelVersion>\r\n    <parent>\r\n        <groupId>org.springframework.boot</groupId>\r\n        <artifactId>spring-boot-starter-parent</artifactId>\r\n        <version>2.4.5</version>\r\n        <relativePath/> <!-- lookup parent from repository -->\r\n    </parent>\r\n    <groupId>com.brankend</groupId>\r\n    <artifactId>casadooleo</artifactId>\r\n    <version>0.0.1-SNAPSHOT</version>\r\n    <name>casadooleo</name>\r\n    <description>Demo project for Spring Boot</description>\r\n    <properties>\r\n        <java.version>11</java.version>\r\n    </properties>\r\n    <dependencies>\r\n        <dependency>\r\n            <groupId>org.springframework.boot</groupId>\r\n            <artifactId>spring-boot-starter-data-jpa</artifactId>\r\n        </dependency>\r\n        <dependency>\r\n            <groupId>org.springframework.boot</groupId>\r\n            <artifactId>spring-boot-starter-security</artifactId>\r\n        </dependency>\r\n        <dependency>\r\n            <groupId>org.springframework.boot</groupId>\r\n            <artifactId>spring-boot-starter-web</artifactId>\r\n        </dependency>\r\n\r\n        <dependency>\r\n            <groupId>com.h2database</groupId>\r\n            <artifactId>h2</artifactId>\r\n            <scope>runtime</scope>\r\n        </dependency>\r\n        <dependency>\r\n            <groupId>org.postgresql</groupId>\r\n            <artifactId>postgresql</artifactId>\r\n            <scope>runtime</scope>\r\n        </dependency>\r\n        <dependency>\r\n            <groupId>org.springframework.boot</groupId>\r\n            <artifactId>spring-boot-starter-test</artifactId>\r\n            <scope>test</scope>\r\n        </dependency>\r\n        <dependency>\r\n            <groupId>org.springframework.security</groupId>\r\n            <artifactId>spring-security-test</artifactId>\r\n            <scope>test</scope>\r\n        </dependency>\r\n    </dependencies>\r\n\r\n    <build>\r\n        <plugins>\r\n            <plugin>\r\n                <groupId>org.springframework.boot</groupId>\r\n                <artifactId>spring-boot-maven-plugin</artifactId>\r\n            </plugin>\r\n        </plugins>\r\n    </build>\r\n\r\n</project>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+--- a/pom.xml	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/pom.xml	(date 1622248114605)
+@@ -41,17 +41,30 @@
+             <scope>runtime</scope>
+         </dependency>
+         <dependency>
++            <groupId>mysql</groupId>
++            <artifactId>mysql-connector-java</artifactId>
++            <scope>runtime</scope>
++        </dependency>
++        <dependency>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-test</artifactId>
+             <scope>test</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-devtools</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>org.springframework.security</groupId>
+             <artifactId>spring-security-test</artifactId>
+             <scope>test</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-devtools</artifactId>
++        </dependency>
++
+     </dependencies>
+-
+     <build>
+         <plugins>
+             <plugin>
+@@ -60,5 +73,4 @@
+             </plugin>
+         </plugins>
+     </build>
+-
+ </project>
+Index: src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+--- a/src/main/resources/application.properties	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/resources/application.properties	(date 1622837404310)
+@@ -1,1 +1,1 @@
+-
++spring.profiles.active=test
+Index: src/main/java/com/backend/casadooleo/config/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.backend.casadooleo.config;\r\n\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.context.annotation.Bean;\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.core.env.Environment;\r\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\r\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\r\nimport org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;\r\nimport org.springframework.security.config.http.SessionCreationPolicy;\r\nimport org.springframework.web.cors.CorsConfiguration;\r\nimport org.springframework.web.cors.CorsConfigurationSource;\r\nimport org.springframework.web.cors.UrlBasedCorsConfigurationSource;\r\n\r\nimport java.util.Arrays;\r\n\r\n@Configuration\r\n@EnableWebSecurity\r\npublic class SecurityConfig extends WebSecurityConfigurerAdapter {\r\n\r\n    @Autowired\r\n    private Environment env;\r\n\r\n    @Override\r\n    protected void configure (HttpSecurity http) throws Exception {\r\n        if (Arrays.asList(env.getActiveProfiles()).contains(\"test\")) {\r\n            http.headers().frameOptions().disable();\r\n        }\r\n\r\n        http.cors().and().csrf().disable();\r\n        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);\r\n        http.authorizeRequests().anyRequest().permitAll();\r\n    }\r\n\r\n    @Bean\r\n    CorsConfigurationSource corsConfigurationSource () {\r\n        CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();\r\n        configuration.setAllowedMethods(Arrays.asList(\"POST\", \"GET\", \"PUT\", \"DELETE\", \"OPTIONS\"));\r\n        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();\r\n        source.registerCorsConfiguration(\"/**\", configuration);\r\n        return source;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/backend/casadooleo/config/SecurityConfig.java b/src/main/java/com/backend/casadooleo/config/SecurityConfig.java
+--- a/src/main/java/com/backend/casadooleo/config/SecurityConfig.java	(revision 056947cc0f976d5b7f538b4568c07cd7cdb07adb)
++++ b/src/main/java/com/backend/casadooleo/config/SecurityConfig.java	(date 1623193456186)
+@@ -26,7 +26,6 @@
+         if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+             http.headers().frameOptions().disable();
+         }
+-
+         http.cors().and().csrf().disable();
+         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+         http.authorizeRequests().anyRequest().permitAll();
