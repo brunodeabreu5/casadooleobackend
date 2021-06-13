@@ -1,6 +1,7 @@
 package com.backend.casadooleobackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +16,10 @@ public class Veiculo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idVeiculo;
+    private String placaDoVeiculo;
     private String marca;
     private String modelo;
     private int ano;
-    private String placaDoVeiculo;
     private int odometro;
 
     //jsonIgnore ele vai iquinora a cateria cliente para não fica em loop

@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name = "ordem_de_servico")
 public class OrdemDeServico {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int idOrdem;
     private String NomeCliente;
     private String tipoDoServico;
