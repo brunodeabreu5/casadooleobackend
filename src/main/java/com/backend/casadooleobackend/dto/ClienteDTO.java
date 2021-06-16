@@ -1,6 +1,7 @@
 package com.backend.casadooleobackend.dto;
 
 import com.backend.casadooleobackend.model.Cliente;
+import com.backend.casadooleobackend.model.Veiculo;
 
 import java.io.Serializable;
 
@@ -17,6 +18,14 @@ public class ClienteDTO implements Serializable {
     public ClienteDTO () {
     }
 
+    public ClienteDTO (int idCliente, String nome, String endereco, String email, String telefone) {
+        this.idCliente = idCliente;
+        this.nome = nome;
+        this.endereco = endereco;
+        this.email = email;
+        this.telefone = telefone;
+    }
+
     public ClienteDTO (Cliente model) {
         idCliente = model.getIdCliente();
         nome = model.getNome();
@@ -24,6 +33,7 @@ public class ClienteDTO implements Serializable {
         email = model.getEmail();
         email = model.getEmail();
     }
+
 
 
     public int getIdCliente () {

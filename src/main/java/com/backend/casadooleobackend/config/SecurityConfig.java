@@ -26,8 +26,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         if (Arrays.asList(environment.getActiveProfiles()).contains("test")) {
             http.headers().frameOptions().disable();
         }
-        http.cors().and().csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.cors()
+                .and()
+                .csrf()
+                .disable();
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().anyRequest().permitAll();
     }
 

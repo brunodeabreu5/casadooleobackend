@@ -2,6 +2,7 @@ package com.backend.casadooleobackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@Data
 @Entity
 @Table(name = "veiculo")
 public class Veiculo {

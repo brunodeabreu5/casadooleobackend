@@ -14,9 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ClienteService implements Serializable {
+public class ClienteService {
 
-    private static final long serialVersionUID = 1L;
     @Autowired
     private ClienteRepositories clienteRepositories;
 
@@ -58,10 +57,10 @@ public class ClienteService implements Serializable {
         //vai fazer a verificação se existem o objeto
         findById(idCliente);
         //tentar
-        try{
+        try {
             clienteRepositories.deleteById(idCliente);
             //pega
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             //lança novo
             throw new DataIntegrityViolationException("Objeto não pode ser deletado!!!");
         }

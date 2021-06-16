@@ -1,6 +1,7 @@
 package com.backend.casadooleobackend.model;
 
 import com.sun.istack.NotNull;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +11,12 @@ import java.util.List;
 
 @Getter
 @Setter
+@Data
 @Entity
 @Table(name = "cliente")
 public class Cliente {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCliente;
     private String nome;
     private String endereco;
@@ -28,7 +30,16 @@ public class Cliente {
 
     }
 
+    public int getIdCliente () {
+        return idCliente;
+    }
+
+    public void setIdCliente (int idCliente) {
+        this.idCliente = idCliente;
+    }
+
     public Cliente (int idCliente, String nome, String endereco, String email, String telefone) {
+        super();
         this.idCliente = idCliente;
         this.nome = nome;
         this.endereco = endereco;
