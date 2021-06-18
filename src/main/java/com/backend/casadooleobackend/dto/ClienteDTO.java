@@ -32,6 +32,7 @@ public class ClienteDTO implements Serializable {
         endereco = model.getEndereco();
         email = model.getEmail();
         email = model.getEmail();
+        telefone = model.getTelefone();
     }
 
 
